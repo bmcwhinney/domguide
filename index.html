@@ -1544,27 +1544,6 @@ function initMap() {
 
   destroyMap();
 
-  // Keep the map focused on Dominica only (no panning to other islands)
-  const dominicaBounds = L.latLngBounds(
-    [15.12, -61.53],
-    [15.68, -61.22]
-  );
-
-  mapInstance = L.map(container, {
-    tapTolerance: 15,
-    maxBounds: dominicaBounds,
-    maxBoundsViscosity: 1.0,
-    minZoom: 10,
-    maxZoom: 14
-  }).setView([15.42, -61.37], 11);
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    minZoom: 10,
-    maxZoom: 14
-  }).addTo(mapInstance);
-
   const customIcon = L.divIcon({
     className: 'custom-map-marker',
     html: `<div style="background-color: var(--marker-color); width: 16px; height: 16px; border-radius: 50%; border: 3px solid #FFF; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>`,
@@ -1572,7 +1551,6 @@ function initMap() {
     iconAnchor: [11, 11]
   });
 
-  // Exhaustive list of all itinerary coordinates
   const locations = [
     // Portsmouth & North West
     { name: "Portsmouth / Saturday Market", type: "Hub", coords: [15.5786, -61.4552] },
@@ -1616,6 +1594,38 @@ function initMap() {
     { name: "Boiling Lake", type: "Trek", coords: [15.3160, -61.2945] }
   ];
 
+  const markerBounds = L.latLngBounds(locations.map((loc) => loc.coords));
+  const lockBounds = markerBounds.pad(0.18);
+
+  mapInstance = L.map(container, {
+    tapTolerance: 15,
+    maxBounds: lockBounds,
+    maxBoundsViscosity: 1.0,
+    minZoom: 9,
+    maxZoom: 14
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    minZoom: 9,
+    maxZoom: 14
+  }).addTo(mapInstance);
+
+  const fitBounds = markerBounds.pad(0.06);
+
+  function fitMapToWholeIsland() {
+    if (!mapInstance) return;
+    const padding = isMobileView() ? [28, 28] : [36, 36];
+    mapInstance.fitBounds(fitBounds, {
+      padding,
+      animate: false,
+      maxZoom: 11
+    });
+  }
+
+  mapInstance._fitBounds = fitBounds;
+
   locations.forEach((loc) => {
     L.marker(loc.coords, { icon: customIcon })
       .bindPopup(
@@ -1628,8 +1638,11 @@ function initMap() {
       .addTo(mapInstance);
   });
 
+  fitMapToWholeIsland();
+
   requestAnimationFrame(() => {
     mapInstance?.invalidateSize();
+    fitMapToWholeIsland();
   });
 }
 
@@ -1637,7 +1650,13 @@ let mapResizeTimer;
 function handleMapResize() {
   if (!mapInstance) return;
   clearTimeout(mapResizeTimer);
-  mapResizeTimer = setTimeout(() => mapInstance.invalidateSize(), 150);
+  mapResizeTimer = setTimeout(() => {
+    mapInstance.invalidateSize();
+    if (mapInstance._fitBounds) {
+      const padding = isMobileView() ? [28, 28] : [36, 36];
+      mapInstance.fitBounds(mapInstance._fitBounds, { padding, animate: false, maxZoom: 11 });
+    }
+  }, 150);
 }
 
 window.addEventListener('resize', () => {
