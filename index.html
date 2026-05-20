@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#F7F6F2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Bmac's curated shortguide to Dominica — beaches, hikes, food, nightlife, map, and local contacts.">
 <title>Bmac's shortguide to Dominica 🇩🇲</title>
 
 <!-- Premium Web Fonts -->
@@ -15,8 +16,6 @@
 
 <!-- Leaflet CSS & JS for the Map -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
 <style>
   :root {
     /* Elevated Nature Palette */
@@ -60,8 +59,8 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-left: env(safe-area-inset-left, 0px);
     --nav-mobile-height: 3.75rem;
-    --mobile-header-h: 5.5rem;
-    --mobile-bottom-h: 4.25rem;
+    --mobile-header-h: 7.75rem;
+    --mobile-bottom-h: 5.5rem;
     
     /* Curves */
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -79,8 +78,6 @@
   
   body { 
     overflow-x: clip;
-    padding-left: var(--safe-left);
-    padding-right: var(--safe-right);
     background-color: var(--bg-base);
     /* Ambient organic gradient background */
     background-image: 
@@ -152,7 +149,7 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
-    padding: calc(0.5rem + var(--safe-top)) 1rem 0.65rem;
+    padding: calc(0.5rem + var(--safe-top)) max(1rem, var(--safe-right)) 0.65rem max(1rem, var(--safe-left));
   }
 
   .mobile-header-top {
@@ -199,12 +196,19 @@
     color: var(--text-primary);
     line-height: 1.2;
     grid-column: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 
   .mobile-section-hint {
     font-size: 0.75rem;
     color: var(--text-tertiary);
     grid-column: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .mobile-section-chevron {
@@ -232,11 +236,12 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border-color);
-    padding: 0.5rem 0.75rem calc(0.5rem + var(--safe-bottom));
+    padding: 0.5rem max(0.75rem, var(--safe-right)) calc(0.5rem + var(--safe-bottom)) max(0.75rem, var(--safe-left));
     display: grid;
     grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto auto;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem 0.5rem;
     box-shadow: 0 -8px 24px rgba(28, 84, 56, 0.06);
   }
 
@@ -298,7 +303,16 @@
     color: var(--text-tertiary);
     text-align: center;
     grid-column: 1 / -1;
-    margin-top: -0.15rem;
+    grid-row: 2;
+    margin-top: 0;
+  }
+
+  .mobile-nav-btn:focus-visible,
+  .mobile-section-trigger:focus-visible,
+  .sheet-section-btn:focus-visible,
+  .nav-btn:focus-visible {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 2px;
   }
 
   /* Section picker sheet */
@@ -548,7 +562,12 @@
     color: #FFFFFF;
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(28, 84, 56, 0.2);
-    transform: scale(1.02);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav-btn.active {
+      transform: scale(1.02);
+    }
   }
 
   /* Main Content Area */
@@ -635,9 +654,11 @@
     }
   }
 
-  .activity-card:active {
-    transform: scale(0.995);
-    transition-duration: 0.1s;
+  @media (hover: hover) and (pointer: fine) {
+    .activity-card:active {
+      transform: scale(0.995);
+      transition-duration: 0.1s;
+    }
   }
 
   .card-header {
@@ -739,9 +760,20 @@
     transition: transform 0.2s ease;
   }
   
-  .custom-map-marker:hover {
-    transform: scale(1.15);
-    z-index: 1000 !important;
+  @media (hover: hover) and (pointer: fine) {
+    .custom-map-marker:hover {
+      transform: scale(1.15);
+      z-index: 1000 !important;
+    }
+  }
+
+  .map-error {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--tag-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
   }
 
   /* Cascading Animations */
@@ -815,7 +847,8 @@
     }
 
     .content-area {
-      padding: 0 1rem;
+      padding-left: max(1rem, var(--safe-left));
+      padding-right: max(1rem, var(--safe-right));
       padding-bottom: calc(var(--mobile-bottom-h) + var(--safe-bottom) + 1.5rem);
       scroll-margin-top: calc(var(--mobile-header-h) + var(--safe-top));
     }
@@ -873,10 +906,15 @@
       border-bottom: none;
     }
 
-    .activity-card.card-tip {
+    .activity-card.card-tip,
+    .activity-card[data-type="Note"] {
       background: var(--tip-bg);
       border-left-color: #D4A853;
       border-bottom-style: dashed;
+    }
+
+    .activity-card:active {
+      transform: none;
     }
 
     .activity-card[data-type="Beach"],
@@ -941,7 +979,7 @@
       color: var(--text-secondary);
     }
 
-    .act-desc a {
+    .act-desc .act-link {
       display: inline-block;
       margin-top: 0.35rem;
       padding: 0.4rem 0.65rem;
@@ -950,6 +988,8 @@
       border-radius: 8px;
       font-weight: 600;
       font-size: 0.875rem;
+      color: var(--accent);
+      text-decoration: none;
     }
 
     .act-phone {
@@ -973,11 +1013,15 @@
     }
 
     #map-container {
-      height: calc(100dvh - var(--mobile-header-h) - var(--mobile-bottom-h) - var(--safe-top) - var(--safe-bottom) - 5rem);
-      min-height: 280px;
+      height: calc(100dvh - var(--mobile-header-h) - var(--mobile-bottom-h) - var(--safe-top) - var(--safe-bottom) - 6.5rem);
+      min-height: 240px;
       max-height: none;
       border-radius: 14px;
       margin: 0;
+    }
+
+    #map-container .leaflet-bottom {
+      bottom: 0.5rem !important;
     }
 
     .map-hint {
@@ -1016,6 +1060,9 @@
     .brand-header {
       padding: var(--space-lg) var(--space-lg) var(--space-md);
       text-align: left;
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .brand-meta {
@@ -1070,6 +1117,7 @@
 
     .content-area {
       padding: 0 var(--space-lg) var(--space-lg) 0;
+      padding-bottom: var(--space-lg);
     }
     
     .activity-list {
@@ -1093,9 +1141,35 @@
     }
   }
 
-  .act-phone {
+  .act-phone,
+  .act-link {
     text-decoration: none;
     touch-action: manipulation;
+  }
+
+  .act-link {
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(28, 84, 56, 0.3);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .act-link:hover {
+      border-bottom-color: var(--accent);
+      background: rgba(28, 84, 56, 0.05);
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 </style>
 </head>
@@ -1103,7 +1177,7 @@
 
 <header class="brand-header">
   <h1 class="brand-title">Bmac's shortguide to Dominica 🇩🇲</h1>
-  <div class="brand-meta">A curated selection of the Nature Isle's best experiences</div>
+  <p class="brand-meta">A curated selection of the Nature Isle's best experiences</p>
 </header>
 
 <!-- Mobile app chrome -->
@@ -1112,16 +1186,17 @@
     <span aria-hidden="true">🇩🇲</span>
     <span class="mobile-brand-text">Bmac's Guide to Dominica</span>
   </div>
-  <button type="button" class="mobile-section-trigger" id="openSectionsBtn" aria-expanded="false" aria-controls="sectionSheetPanel">
+  <button type="button" class="mobile-section-trigger" id="openSectionsBtn" aria-expanded="false" aria-controls="sectionSheetPanel" aria-haspopup="dialog">
     <span class="mobile-section-current" id="mobileCurrentSection">Interactive Island Map</span>
     <span class="mobile-section-hint" id="mobileCurrentTheme">Overview</span>
     <span class="mobile-section-chevron" aria-hidden="true">▼</span>
+    <span class="sr-only">Open section menu</span>
   </button>
 </header>
 
 <div class="section-sheet" id="sectionSheet" aria-hidden="true">
   <div class="section-sheet-backdrop" id="sheetBackdrop"></div>
-  <div class="section-sheet-panel" id="sectionSheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="section-sheet-panel" id="sectionSheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" inert>
     <div class="sheet-handle" aria-hidden="true"></div>
     <h2 class="sheet-title" id="sheetTitle">Jump to a section</h2>
     <div class="section-sheet-list" id="sectionSheetList"></div>
@@ -1155,13 +1230,14 @@
   </nav>
 
   <main class="content-area">
-    <div id="contentContainer" role="tabpanel" aria-labelledby="nav-tab-0">
+    <div id="contentContainer" role="tabpanel" aria-labelledby="nav-tab-0" tabindex="-1">
       <!-- Content injected via JS -->
     </div>
   </main>
 
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const data = [
   {
@@ -1208,7 +1284,7 @@ const data = [
       { type: "Note", title: "The Nightlife Scene", desc: "Just a heads up: Dominica isn’t a huge nightlife destination yet. It's definitely starting to grow, but things are still pretty quiet overall. That said, you can find a really good social vibe most nights if you head to the right spots.", isTip: true },
       { type: "Nightlife", title: "Roseau Bayfront", desc: "Roseau has gotten a lot more lively recently. You'll find lots of busy bars right on the bayfront—it caters a bit more to tourists, but it's definitely a fun, energetic spot for a night out." },
       { type: "Culture", title: "Local Rum Shacks", desc: "You'll also find lively energy at the local rum shacks dotted everywhere across the island, much like you'd see in Jamaica. It's the best place to find real locals playing dominoes, and where you'll inevitably be introduced to Dominican bush rum 😂" },
-      { type: "Local", title: "Goodvibes Only House", desc: "Great home-cooked food and a perfect lunch stop near the Roseau hot springs. The owner, Froggy, is a legend. <a href='https://www.instagram.com/goodv_ibesonlyhouse/' target='_blank' rel='noopener noreferrer'>View details</a>." },
+      { type: "Local", title: "Goodvibes Only House", desc: "Great home-cooked food and a perfect lunch stop near the Roseau hot springs. The owner, Froggy, is a legend.", link: { url: "https://www.instagram.com/goodv_ibesonlyhouse/", label: "View on Instagram" } },
       { type: "Dining", title: "Lacou", desc: "A farm-to-table spot down in Roseau with a rotating menu. Definitely one of the best places to eat on the island." },
       { type: "Seafood", title: "Keepin' It Real", desc: "Right on the beach at Toucari Bay. Grab some freshly grilled lobster and a local beer—it actually has a great local vibe most nights of the week." },
       { type: "Evening", title: "Bell Hall Beach Spot", desc: "A great option for evening drinks and food right by the water. It stays lively and has a really relaxed atmosphere most nights." },
@@ -1253,11 +1329,15 @@ const data = [
 
 let activeIndex = 0;
 let mapInstance = null;
+let listenersBound = false;
+let sheetTrigger = null;
+
 const navContainer = document.getElementById('navContainer');
 const contentContainer = document.getElementById('contentContainer');
 const sectionSheet = document.getElementById('sectionSheet');
 const sectionSheetList = document.getElementById('sectionSheetList');
 const sheetBackdrop = document.getElementById('sheetBackdrop');
+const sectionSheetPanel = document.getElementById('sectionSheetPanel');
 const openSectionsBtn = document.getElementById('openSectionsBtn');
 const openSectionsBtnBottom = document.getElementById('openSectionsBtnBottom');
 const mobileCurrentSection = document.getElementById('mobileCurrentSection');
@@ -1270,19 +1350,67 @@ function isMobileView() {
   return window.matchMedia('(max-width: 899px)').matches;
 }
 
-function formatDesc(desc) {
-  return desc.replace(
-    /(\+1-767-\d{3}-\d{4})/g,
-    '<a class="act-phone" href="tel:$1">📞 $1</a>'
-  );
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatDesc(desc, link) {
+  let html = escapeHtml(desc);
+  html = html.replace(/(\+1-767-\d{3}-\d{4})/g, (phone) => {
+    const digits = phone.replace(/\D/g, '');
+    return `<a class="act-phone" href="tel:+${digits}">📞 ${escapeHtml(phone)}</a>`;
+  });
+  if (link && link.url && link.label) {
+    html += ` <a class="act-link" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`;
+  }
+  return html;
+}
+
+function destroyMap() {
+  if (mapInstance) {
+    mapInstance.remove();
+    mapInstance = null;
+  }
 }
 
 function init() {
+  bindListeners();
   renderNav();
   renderSectionSheet();
   renderContent();
   updateMobileChrome();
-  setupMobileListeners();
+}
+
+function bindListeners() {
+  if (listenersBound) return;
+  listenersBound = true;
+
+  navContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.nav-btn');
+    if (btn && btn.dataset.index != null) switchTab(Number(btn.dataset.index));
+  });
+
+  [openSectionsBtn, openSectionsBtnBottom].forEach((btn) => {
+    btn.addEventListener('click', openSectionSheet);
+  });
+
+  sheetBackdrop.addEventListener('click', closeSectionSheet);
+
+  prevSectionBtn.addEventListener('click', () => switchTab(activeIndex - 1));
+  nextSectionBtn.addEventListener('click', () => switchTab(activeIndex + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sectionSheet.classList.contains('open')) {
+      closeSectionSheet();
+      sheetTrigger?.focus();
+    }
+  });
 }
 
 function renderSectionSheet() {
@@ -1293,15 +1421,15 @@ function renderSectionSheet() {
       <button type="button" class="sheet-section-btn ${index === activeIndex ? 'active' : ''}" data-index="${index}">
         <span class="sheet-icon" aria-hidden="true">${item.icon || '📍'}</span>
         <span class="sheet-label-wrap">
-          <span class="sheet-label">${item.label}</span>
-          <span class="sheet-sublabel">${item.theme}</span>
+          <span class="sheet-label">${escapeHtml(item.label)}</span>
+          <span class="sheet-sublabel">${escapeHtml(item.theme)}</span>
         </span>
-        ${countLabel ? `<span class="sheet-count">${countLabel}</span>` : ''}
+        ${countLabel ? `<span class="sheet-count">${escapeHtml(String(countLabel))}</span>` : ''}
       </button>
     `;
   }).join('');
 
-  sectionSheetList.querySelectorAll('.sheet-section-btn').forEach(btn => {
+  sectionSheetList.querySelectorAll('.sheet-section-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       switchTab(Number(btn.dataset.index));
       closeSectionSheet();
@@ -1323,29 +1451,22 @@ function updateMobileChrome() {
 }
 
 function openSectionSheet() {
+  sheetTrigger = document.activeElement;
   sectionSheet.classList.add('open');
   sectionSheet.setAttribute('aria-hidden', 'false');
+  sectionSheetPanel.inert = false;
   openSectionsBtn.setAttribute('aria-expanded', 'true');
   document.body.classList.add('sheet-open');
+  const active = sectionSheetList.querySelector('.sheet-section-btn.active');
+  (active || sectionSheetList.querySelector('.sheet-section-btn'))?.focus();
 }
 
 function closeSectionSheet() {
   sectionSheet.classList.remove('open');
   sectionSheet.setAttribute('aria-hidden', 'true');
+  sectionSheetPanel.inert = true;
   openSectionsBtn.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('sheet-open');
-}
-
-function setupMobileListeners() {
-  [openSectionsBtn, openSectionsBtnBottom].forEach(btn => {
-    btn.addEventListener('click', openSectionSheet);
-  });
-  sheetBackdrop.addEventListener('click', closeSectionSheet);
-  prevSectionBtn.addEventListener('click', () => switchTab(activeIndex - 1));
-  nextSectionBtn.addEventListener('click', () => switchTab(activeIndex + 1));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeSectionSheet();
-  });
 }
 
 function renderNav() {
@@ -1355,24 +1476,30 @@ function renderNav() {
         type="button"
         role="tab"
         class="nav-btn ${index === activeIndex ? 'active' : ''}" 
-        onclick="switchTab(${index})"
+        data-index="${index}"
         aria-selected="${index === activeIndex}"
         aria-controls="contentContainer"
         id="nav-tab-${index}"
+        tabindex="${index === activeIndex ? '0' : '-1'}"
       >
-        ${item.label}
+        ${escapeHtml(item.label)}
       </button>
     </div>
   `).join('');
 }
 
 function initMap() {
-  if (mapInstance) {
-    mapInstance.remove();
+  const container = document.getElementById('map-container');
+  if (!container) return;
+
+  if (typeof L === 'undefined') {
+    container.innerHTML = '<p class="map-error">Map could not load. Check your connection and refresh.</p>';
+    return;
   }
-  
-  // Center map on Dominica
-  mapInstance = L.map('map-container').setView([15.45, -61.3705], 11);
+
+  destroyMap();
+
+  mapInstance = L.map(container, { tapTolerance: 15 }).setView([15.45, -61.3705], 11);
   
   // Minimalist, slightly warm base map layer
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -1432,19 +1559,20 @@ function initMap() {
     { name: "Boiling Lake", type: "Trek", coords: [15.3160, -61.2945] }
   ];
 
-  locations.forEach(loc => {
+  locations.forEach((loc) => {
     L.marker(loc.coords, { icon: customIcon })
-      .bindPopup(`
-        <div style="font-family: var(--font-sans); max-width: 220px;">
-          <strong style="font-size: 1rem; color: var(--accent); font-weight: 600; line-height: 1.3; display:block;">${loc.name}</strong>
-          <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-top:6px; display:inline-block;">${loc.type}</span>
-        </div>
-      `, { maxWidth: 260, autoPanPadding: [24, 24] })
+      .bindPopup(
+        `<div style="font-family: var(--font-sans); max-width: 220px;">
+          <strong style="font-size: 1rem; color: var(--accent); font-weight: 600; line-height: 1.3; display:block;">${escapeHtml(loc.name)}</strong>
+          <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-top:6px; display:inline-block;">${escapeHtml(loc.type)}</span>
+        </div>`,
+        { maxWidth: 260, autoPanPaddingTopLeft: [24, 24], autoPanPaddingBottomRight: [24, isMobileView() ? 100 : 24] }
+      )
       .addTo(mapInstance);
   });
 
   requestAnimationFrame(() => {
-    mapInstance.invalidateSize();
+    mapInstance?.invalidateSize();
   });
 }
 
@@ -1464,51 +1592,58 @@ window.addEventListener('orientationchange', handleMapResize);
 function renderContent() {
   const section = data[activeIndex];
   contentContainer.setAttribute('aria-labelledby', `nav-tab-${activeIndex}`);
-  
-  // Reset content to trigger reflows for animation
+
+  destroyMap();
   contentContainer.innerHTML = '';
-  
+
   if (section.isMap) {
     contentContainer.innerHTML = `
       <div class="section-header">
-        <div class="section-theme">${section.theme}</div>
-        <h2 class="section-title">${section.title}</h2>
+        <div class="section-theme">${escapeHtml(section.theme)}</div>
+        <h2 class="section-title">${escapeHtml(section.title)}</h2>
         <p class="section-count">Tap markers for details</p>
       </div>
-      <div id="map-container"></div>
+      <div id="map-container" role="application" aria-label="Interactive map of Dominica"></div>
       <p class="map-hint">Pinch to zoom · Tap a marker for the spot name</p>
     `;
-    
-    // Timeout to ensure the DOM has painted the map container before initializing Leaflet
-    setTimeout(() => {
-      initMap();
-      setTimeout(handleMapResize, 200);
-    }, 50);
-    
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        initMap();
+        setTimeout(handleMapResize, 200);
+      }, 50);
+    });
     return;
   }
 
   const count = section.activities.length;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const cardsHtml = section.activities.map((act, idx) => `
-    <div class="activity-card stagger-item ${act.isTip ? 'card-tip' : ''}" data-type="${act.type}" style="animation-delay: ${isMobileView() ? 0 : idx * 0.08}s">
+    <article class="activity-card stagger-item ${act.isTip ? 'card-tip' : ''}" data-type="${escapeHtml(act.type)}">
       <div class="card-header">
-        <h3 class="act-title">${act.title}</h3>
-        <span class="act-tag">${act.type}</span>
+        <h3 class="act-title">${escapeHtml(act.title)}</h3>
+        <span class="act-tag">${escapeHtml(act.type)}</span>
       </div>
-      <p class="act-desc">${formatDesc(act.desc)}</p>
-    </div>
+      <p class="act-desc">${formatDesc(act.desc, act.link)}</p>
+    </article>
   `).join('');
 
   contentContainer.innerHTML = `
     <div class="section-header">
-      <div class="section-theme">${section.theme}</div>
-      <h2 class="section-title">${section.title}</h2>
+      <div class="section-theme">${escapeHtml(section.theme)}</div>
+      <h2 class="section-title">${escapeHtml(section.title)}</h2>
       <p class="section-count">${count} ${count === 1 ? 'spot' : 'spots'}</p>
     </div>
     <div class="activity-list">
       ${cardsHtml}
     </div>
   `;
+
+  if (!reducedMotion && !isMobileView()) {
+    contentContainer.querySelectorAll('.stagger-item').forEach((el, idx) => {
+      el.style.animationDelay = `${idx * 0.08}s`;
+    });
+  }
 }
 
 function switchTab(index) {
@@ -1523,13 +1658,15 @@ function switchTab(index) {
   updateMobileChrome();
   closeSectionSheet();
 
+  navContainer.querySelectorAll('.nav-btn').forEach((btn, i) => {
+    btn.setAttribute('tabindex', i === activeIndex ? '0' : '-1');
+  });
+
+  const scrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  window.scrollTo({ top: 0, behavior: scrollBehavior });
+
   if (isMobileView()) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    const activeBtn = document.querySelector('.nav-btn.active');
-    if (activeBtn) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    contentContainer.focus({ preventScroll: true });
   }
 }
 
