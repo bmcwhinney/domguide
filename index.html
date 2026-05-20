@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F7F6F2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Bmac's shortguide to Dominica 🇩🇲</title>
+
+<!-- Premium Web Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+
+<!-- Leaflet CSS & JS for the Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+  :root {
+    /* Elevated Nature Palette */
+    --bg-base: #F7F6F2;
+    --bg-surface: rgba(255, 255, 255, 0.7);
+    --bg-surface-hover: rgba(255, 255, 255, 0.95);
+    
+    --text-primary: #1A2421; /* Very deep slate-green */
+    --text-secondary: #4A5D53;
+    --text-tertiary: #84968C;
+    --border-color: rgba(45, 122, 84, 0.15);
+    
+    /* Accents */
+    --accent: #1C5438; /* Rich Forest Green */
+    --accent-light: #2D7A54;
+    --tag-bg: #E6EFE9;
+    --tag-text: #17422C;
+    --marker-color: #E05D3A; /* Terracotta */
+    --tip-bg: #FDF9F1;
+    --tip-border: #F0DFC1;
+    
+    /* Shadows */
+    --shadow-sm: 0 4px 12px rgba(28, 84, 56, 0.03);
+    --shadow-md: 0 12px 32px rgba(28, 84, 56, 0.08);
+    --shadow-float: 0 20px 40px rgba(28, 84, 56, 0.12);
+    
+    /* Typography */
+    --font-serif: "Playfair Display", Georgia, serif;
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    
+    /* Layout */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 3rem;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --nav-mobile-height: 3.75rem;
+    --mobile-header-h: 5.5rem;
+    --mobile-bottom-h: 4.25rem;
+    
+    /* Curves */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.2s var(--ease-out-expo);
+    --transition-smooth: 0.4s var(--ease-out-expo);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  
+  body { 
+    overflow-x: clip;
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+    background-color: var(--bg-base);
+    /* Ambient organic gradient background */
+    background-image: 
+      radial-gradient(circle at 100% 0%, rgba(224, 93, 58, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, rgba(28, 84, 56, 0.04) 0%, transparent 40%);
+    background-attachment: scroll;
+    color: var(--text-primary); 
+    font-family: var(--font-sans); 
+    -webkit-font-smoothing: antialiased; 
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    -webkit-tap-highlight-color: rgba(28, 84, 56, 0.12);
+  }
+
+  @media (min-width: 900px) {
+    body { background-attachment: fixed; }
+  }
+
+  /* Core Layout Grid */
+  .layout-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* Header & Branding */
+  .brand-header {
+    padding: calc(var(--space-md) + var(--safe-top)) var(--space-md) var(--space-sm);
+    text-align: center;
+  }
+
+  .brand-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 6.5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+    color: var(--accent);
+    line-height: 1.15;
+    text-wrap: balance;
+    hyphens: auto;
+  }
+
+  .brand-meta {
+    font-size: clamp(0.875rem, 2.8vw, 0.95rem);
+    font-weight: 400;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    text-wrap: pretty;
+    max-width: 28rem;
+    margin: 0 auto;
+  }
+
+  /* ── Mobile app shell (hidden on desktop) ── */
+  .mobile-header,
+  .mobile-bottom-nav,
+  .section-sheet {
+    display: none;
+  }
+
+  .mobile-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(247, 246, 242, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    padding: calc(0.5rem + var(--safe-top)) 1rem 0.65rem;
+  }
+
+  .mobile-header-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-brand-text {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+
+  .mobile-section-trigger {
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    touch-action: manipulation;
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.15rem 0.5rem;
+    align-items: center;
+  }
+
+  .mobile-section-trigger:active {
+    transform: scale(0.98);
+    background: var(--tag-bg);
+  }
+
+  .mobile-section-current {
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+    grid-column: 1;
+  }
+
+  .mobile-section-hint {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    grid-column: 1;
+  }
+
+  .mobile-section-chevron {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--tag-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem calc(0.5rem + var(--safe-bottom));
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 -8px 24px rgba(28, 84, 56, 0.06);
+  }
+
+  .mobile-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    min-height: 48px;
+    padding: 0.35rem 0.5rem;
+    border: none;
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-radius: 12px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .mobile-nav-btn:disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .mobile-nav-btn:active:not(:disabled) {
+    background: var(--tag-bg);
+    color: var(--accent);
+  }
+
+  .mobile-nav-btn .nav-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .mobile-nav-primary {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 14px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    min-height: 48px;
+    flex-direction: row;
+    gap: 0.4rem;
+    box-shadow: 0 4px 14px rgba(28, 84, 56, 0.25);
+  }
+
+  .mobile-nav-primary:active {
+    background: var(--accent-light);
+    color: #fff;
+  }
+
+  .mobile-nav-counter {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-align: center;
+    grid-column: 1 / -1;
+    margin-top: -0.15rem;
+  }
+
+  /* Section picker sheet */
+  .section-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    visibility: hidden;
+    transition: visibility 0.3s;
+  }
+
+  .section-sheet.open {
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .section-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 36, 33, 0.45);
+    opacity: 0;
+    transition: opacity 0.35s var(--ease-out-expo);
+  }
+
+  .section-sheet.open .section-sheet-backdrop {
+    opacity: 1;
+  }
+
+  .section-sheet-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 85dvh;
+    background: var(--bg-base);
+    border-radius: 20px 20px 0 0;
+    padding: 0.75rem 1rem calc(1.25rem + var(--safe-bottom));
+    transform: translateY(100%);
+    transition: transform 0.4s var(--ease-out-expo);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -20px 60px rgba(0,0,0,0.15);
+  }
+
+  .section-sheet.open .section-sheet-panel {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(28, 84, 56, 0.2);
+    border-radius: 99px;
+    margin: 0 auto 1rem;
+    flex-shrink: 0;
+  }
+
+  .sheet-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+
+  .section-sheet-list {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .sheet-section-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    text-align: left;
+    padding: 0.9rem 1rem;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .sheet-section-btn:active {
+    background: var(--tag-bg);
+  }
+
+  .sheet-section-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .sheet-section-btn.active .sheet-label,
+  .sheet-section-btn.active .sheet-count {
+    color: #fff;
+  }
+
+  .sheet-section-btn.active .sheet-count {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .sheet-icon {
+    font-size: 1.5rem;
+    width: 2.25rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .sheet-label-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sheet-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .sheet-sublabel {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-top: 0.15rem;
+  }
+
+  .sheet-section-btn.active .sheet-sublabel {
+    color: rgba(255,255,255,0.75);
+  }
+
+  .sheet-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--tag-bg);
+    padding: 0.25rem 0.6rem;
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+
+  body.sheet-open {
+    overflow: hidden;
+  }
+
+  /* Navigation (Desktop sidebar) */
+  .nav-container {
+    background: rgba(247, 246, 242, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    margin-bottom: var(--space-md);
+    padding-top: var(--safe-top);
+  }
+
+  .nav-scroll-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-scroll-wrap::before,
+  .nav-scroll-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1.75rem;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .nav-scroll-wrap::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(247, 246, 242, 0.98), transparent);
+  }
+
+  .nav-scroll-wrap::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(247, 246, 242, 0.98), transparent);
+  }
+
+  .nav-list {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--space-sm) var(--space-md);
+    gap: 0.5rem;
+    touch-action: pan-x;
+  }
+  
+  .nav-list::-webkit-scrollbar { display: none; }
+
+  .nav-item {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .nav-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0.65rem 1.25rem;
+    min-height: 44px;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav-btn:hover { 
+      color: var(--accent); 
+      background: rgba(28, 84, 56, 0.04);
+    }
+  }
+  
+  .nav-btn.active {
+    background: var(--accent);
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(28, 84, 56, 0.2);
+    transform: scale(1.02);
+  }
+
+  /* Main Content Area */
+  .content-area {
+    padding: 0 var(--space-md) var(--space-md);
+    padding-bottom: calc(var(--space-lg) + var(--safe-bottom));
+    scroll-margin-top: calc(var(--nav-mobile-height) + var(--safe-top) + 0.5rem);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-lg);
+    animation: slideDownFade 0.6s var(--ease-out-expo) forwards;
+    scroll-margin-top: calc(var(--nav-mobile-height) + var(--safe-top) + 0.5rem);
+  }
+
+  .section-theme {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-light);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    background: var(--tag-bg);
+    padding: 0.3rem 0.8rem;
+    border-radius: 99px;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.85rem, 6vw, 3.2rem);
+    font-weight: 500;
+    line-height: 1.12;
+    color: var(--text-primary);
+    margin-top: 0.5rem;
+    text-wrap: balance;
+  }
+
+  /* Activity List Framework */
+  .activity-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .activity-card {
+    background: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Subtle inner light reflection */
+  .activity-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
+    opacity: 0.6;
+  }
+
+  /* Styling adjustment for tip cards */
+  .activity-card.card-tip {
+    background: var(--tip-bg);
+    border: 1px dashed var(--tip-border);
+    box-shadow: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .activity-card:hover {
+      background: var(--bg-surface-hover);
+      border-color: rgba(28, 84, 56, 0.15);
+      box-shadow: var(--shadow-float);
+      transform: translateY(-4px) scale(1.005);
+    }
+  }
+
+  .activity-card:active {
+    transform: scale(0.995);
+    transition-duration: 0.1s;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .act-title {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .act-tag {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.35rem 0.75rem;
+    background: var(--tag-bg);
+    border-radius: var(--radius-sm);
+    color: var(--tag-text);
+    white-space: nowrap;
+    border: 1px solid rgba(28, 84, 56, 0.05);
+  }
+
+  .act-desc {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    flex-grow: 1;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .act-desc a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(28, 84, 56, 0.3);
+    transition: all var(--transition-fast);
+    padding: 0.15em 0.1em 0.2em;
+    margin: -0.15em -0.1em;
+    border-radius: 2px;
+    touch-action: manipulation;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .act-desc a:hover {
+      border-bottom-color: var(--accent);
+      background: rgba(28, 84, 56, 0.05);
+    }
+  }
+
+  /* Map Container & Custom Leaflet Overrides */
+  #map-container {
+    height: 75vh;
+    min-height: 500px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.8);
+    position: relative;
+    z-index: 1; 
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-smooth);
+    animation: scaleUpFade 0.7s var(--ease-out-expo) forwards;
+  }
+  
+  @media (hover: hover) and (pointer: fine) {
+    #map-container:hover {
+      box-shadow: var(--shadow-float);
+    }
+  }
+  
+  .leaflet-container {
+    font-family: var(--font-sans) !important;
+  }
+  
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-md) !important;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.95) !important;
+  }
+  
+  .leaflet-popup-content {
+    margin: 16px 20px !important;
+  }
+
+  .custom-map-marker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+  }
+  
+  .custom-map-marker:hover {
+    transform: scale(1.15);
+    z-index: 1000 !important;
+  }
+
+  /* Cascading Animations */
+  .stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideUpFade 0.6s var(--ease-out-expo) forwards;
+  }
+
+  @keyframes slideUpFade {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes slideDownFade {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scaleUpFade {
+    from { opacity: 0; transform: scale(0.98) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .stagger-item,
+    .section-header,
+    #map-container {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .activity-card,
+    .nav-btn,
+    .nav-btn.active {
+      transition: none;
+    }
+  }
+
+  /* ── Mobile layout (app-style) ── */
+  @media (max-width: 899px) {
+    :root {
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+    }
+
+    .brand-header,
+    .nav-container {
+      display: none !important;
+    }
+
+    .mobile-header {
+      display: block;
+    }
+
+    .mobile-bottom-nav {
+      display: grid;
+    }
+
+    .section-sheet {
+      display: block;
+    }
+
+    .section-count,
+    .map-hint {
+      display: block;
+    }
+
+    .layout-wrapper {
+      min-height: auto;
+    }
+
+    .content-area {
+      padding: 0 1rem;
+      padding-bottom: calc(var(--mobile-bottom-h) + var(--safe-bottom) + 1.5rem);
+      scroll-margin-top: calc(var(--mobile-header-h) + var(--safe-top));
+    }
+
+    .section-header {
+      margin-bottom: 1rem;
+      padding-top: 0.25rem;
+    }
+
+    .section-theme {
+      font-size: 0.6875rem;
+      padding: 0.25rem 0.65rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-top: 0.35rem;
+    }
+
+    .section-count {
+      display: inline-block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      margin-top: 0.35rem;
+    }
+
+    /* Native grouped list */
+    .activity-list {
+      gap: 0;
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .activity-card {
+      padding: 1rem 1rem 1rem 0.85rem;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      border-bottom: 1px solid rgba(45, 122, 84, 0.1);
+      border-left: 4px solid var(--accent-light);
+      background: #fff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .activity-card::before {
+      display: none;
+    }
+
+    .activity-card:last-child {
+      border-bottom: none;
+    }
+
+    .activity-card.card-tip {
+      background: var(--tip-bg);
+      border-left-color: #D4A853;
+      border-bottom-style: dashed;
+    }
+
+    .activity-card[data-type="Beach"],
+    .activity-card[data-type="Snorkel"],
+    .activity-card[data-type="Marine"],
+    .activity-card[data-type="Swim"] {
+      border-left-color: #2B7A9E;
+    }
+
+    .activity-card[data-type="Hike"],
+    .activity-card[data-type="Trek"],
+    .activity-card[data-type="Nature"] {
+      border-left-color: #3D8B5A;
+    }
+
+    .activity-card[data-type="Dining"],
+    .activity-card[data-type="Seafood"],
+    .activity-card[data-type="Bar"],
+    .activity-card[data-type="Nightlife"],
+    .activity-card[data-type="Food"],
+    .activity-card[data-type="Bistro"],
+    .activity-card[data-type="Local"],
+    .activity-card[data-type="Evening"],
+    .activity-card[data-type="Event"],
+    .activity-card[data-type="Social"],
+    .activity-card[data-type="Culture"] {
+      border-left-color: #C45C2E;
+    }
+
+    .activity-card[data-type="Fine Dining"],
+    .activity-card[data-type="Upscale"] {
+      border-left-color: #7B5EA7;
+    }
+
+    .card-header {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .act-title {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      flex: 1 1 100%;
+      order: 2;
+      width: 100%;
+    }
+
+    .act-tag {
+      font-size: 0.625rem;
+      padding: 0.2rem 0.5rem;
+      order: 1;
+      white-space: nowrap;
+      margin-bottom: 0.15rem;
+    }
+
+    .act-desc {
+      font-size: 0.9375rem;
+      line-height: 1.55;
+      color: var(--text-secondary);
+    }
+
+    .act-desc a {
+      display: inline-block;
+      margin-top: 0.35rem;
+      padding: 0.4rem 0.65rem;
+      background: var(--tag-bg);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .act-phone {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+      padding: 0.55rem 0.85rem;
+      background: var(--accent);
+      color: #fff !important;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      text-decoration: none;
+      border: none;
+    }
+
+    .stagger-item {
+      animation-delay: 0s !important;
+      animation-duration: 0.35s;
+    }
+
+    #map-container {
+      height: calc(100dvh - var(--mobile-header-h) - var(--mobile-bottom-h) - var(--safe-top) - var(--safe-bottom) - 5rem);
+      min-height: 280px;
+      max-height: none;
+      border-radius: 14px;
+      margin: 0;
+    }
+
+    .map-hint {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      text-align: center;
+      margin-top: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .leaflet-control-zoom a {
+      width: 40px !important;
+      height: 40px !important;
+      line-height: 40px !important;
+      font-size: 20px !important;
+    }
+
+    .leaflet-popup-content {
+      margin: 14px 16px !important;
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .mobile-section-current {
+      font-size: 1rem;
+    }
+
+    .activity-card {
+      padding: 0.9rem 0.85rem 0.9rem 0.75rem;
+    }
+  }
+
+  /* Desktop Enhancements */
+  @media (min-width: 900px) {
+    .brand-header {
+      padding: var(--space-lg) var(--space-lg) var(--space-md);
+      text-align: left;
+    }
+
+    .brand-meta {
+      margin: 0;
+      max-width: none;
+    }
+
+    .nav-container {
+      padding-top: 0;
+    }
+
+    .nav-scroll-wrap::before,
+    .nav-scroll-wrap::after {
+      display: none;
+    }
+    
+    .layout-wrapper {
+      grid-template-columns: 280px 1fr;
+      padding-top: 0;
+      gap: var(--space-lg);
+    }
+
+    .nav-container {
+      position: sticky;
+      top: var(--space-lg);
+      height: max-content;
+      border-bottom: none;
+      background: transparent;
+      backdrop-filter: none;
+      padding-left: var(--space-lg);
+      margin-bottom: 0;
+    }
+
+    .nav-list {
+      flex-direction: column;
+      padding: 0;
+      gap: 0.5rem;
+    }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      justify-content: flex-start;
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+    }
+    
+    .nav-btn.active {
+      transform: translateX(4px);
+    }
+
+    .content-area {
+      padding: 0 var(--space-lg) var(--space-lg) 0;
+    }
+    
+    .activity-list {
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    }
+
+    .section-count,
+    .map-hint {
+      display: none;
+    }
+
+    .act-phone {
+      display: inline;
+      margin-top: 0;
+      padding: 0;
+      background: none;
+      color: var(--accent) !important;
+      border-radius: 0;
+      font-weight: 600;
+      font-size: inherit;
+    }
+  }
+
+  .act-phone {
+    text-decoration: none;
+    touch-action: manipulation;
+  }
+</style>
+</head>
+<body>
+
+<header class="brand-header">
+  <h1 class="brand-title">Bmac's shortguide to Dominica 🇩🇲</h1>
+  <div class="brand-meta">A curated selection of the Nature Isle's best experiences</div>
+</header>
+
+<!-- Mobile app chrome -->
+<header class="mobile-header" id="mobileHeader">
+  <div class="mobile-header-top">
+    <span aria-hidden="true">🇩🇲</span>
+    <span class="mobile-brand-text">Bmac's Guide to Dominica</span>
+  </div>
+  <button type="button" class="mobile-section-trigger" id="openSectionsBtn" aria-expanded="false" aria-controls="sectionSheetPanel">
+    <span class="mobile-section-current" id="mobileCurrentSection">Interactive Island Map</span>
+    <span class="mobile-section-hint" id="mobileCurrentTheme">Overview</span>
+    <span class="mobile-section-chevron" aria-hidden="true">▼</span>
+  </button>
+</header>
+
+<div class="section-sheet" id="sectionSheet" aria-hidden="true">
+  <div class="section-sheet-backdrop" id="sheetBackdrop"></div>
+  <div class="section-sheet-panel" id="sectionSheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <h2 class="sheet-title" id="sheetTitle">Jump to a section</h2>
+    <div class="section-sheet-list" id="sectionSheetList"></div>
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Section navigation">
+  <button type="button" class="mobile-nav-btn" id="prevSection" aria-label="Previous section">
+    <span class="nav-icon" aria-hidden="true">←</span>
+    <span>Prev</span>
+  </button>
+  <button type="button" class="mobile-nav-btn mobile-nav-primary" id="openSectionsBtnBottom" aria-label="Browse all sections">
+    <span aria-hidden="true">☰</span>
+    <span>Sections</span>
+  </button>
+  <button type="button" class="mobile-nav-btn" id="nextSection" aria-label="Next section">
+    <span class="nav-icon" aria-hidden="true">→</span>
+    <span>Next</span>
+  </button>
+  <span class="mobile-nav-counter" id="sectionCounter" aria-live="polite">1 of 10</span>
+</nav>
+
+<div class="layout-wrapper">
+  
+  <nav class="nav-container" aria-label="Itinerary Navigation">
+    <div class="nav-scroll-wrap">
+      <div class="nav-list" id="navContainer" role="tablist">
+        <!-- Navigation injected via JS -->
+      </div>
+    </div>
+  </nav>
+
+  <main class="content-area">
+    <div id="contentContainer" role="tabpanel" aria-labelledby="nav-tab-0">
+      <!-- Content injected via JS -->
+    </div>
+  </main>
+
+</div>
+
+<script>
+const data = [
+  {
+    label: "Map View", shortLabel: "Map", icon: "🗺", title: "Interactive Island Map", theme: "Overview", isMap: true
+  },
+  {
+    label: "Portsmouth", shortLabel: "Portsmouth", icon: "⚓", title: "Portsmouth Base", theme: "Regional Guide",
+    activities: [
+      { type: "Nature", title: "Indian River", desc: "Take a quiet rowboat tour through the mangroves. Since motors aren't allowed, it's a really peaceful way to see the area." },
+      { type: "Heritage", title: "Cabrits National Park", desc: "Walk up to the 18th-century Fort Shirley ruins. You get a great view over the bay from the top." },
+      { type: "Beach", title: "Bell Hall Beach", desc: "Just 5 minutes from town. It's a nice local beach with food and a coral reef just 40-50 meters out." },
+      { type: "Marine", title: "Whale Watching", desc: "Head out from Picard with a local guide. If you're lucky, you'll spot resident sperm whales and dolphins." },
+      { type: "Market", title: "Saturday Morning Market", desc: "If you're up early, wander down to the farmers market in Portsmouth for fresh fruit and local bakes." }
+    ]
+  },
+  {
+    label: "Beaches & Bays", shortLabel: "Beaches", icon: "🏖", title: "Coastal Locations", theme: "Water Access",
+    activities: [
+      { type: "Beach", title: "Batibou Beach", desc: "A great beach on the Atlantic side. Try to go on a Sunday when Irma is cooking, and just keep an eye on the tides." },
+      { type: "Beach", title: "Purple Turtle Beach", desc: "A total Portsmouth legend right on the waterfront. It's a classic local hangout spot with a relaxed beach bar vibe, great for an easy swim and chilling out." },
+      { type: "Beach", title: "Coconut Beach", desc: "Located along the Picard-Portsmouth stretch. It's a wide, sandy spot with calm waters and an excellent view back toward Cabrits National Park—ideal for a quiet swim or catching the sunset." },
+      { type: "Snorkel", title: "Toucari Bay", desc: "Just north of Portsmouth. It has a sunken shipwreck for snorkeling and a really relaxed, local feel." },
+      { type: "Beach", title: "Mero Beach", desc: "A dark sand beach with calm water. It's best to go on non-cruise ship days so it's not too crowded." },
+      { type: "Day Trip", title: "Soufriere & Scotts Head", desc: "Spend an afternoon in Soufriere. You can go kayaking with the Soufriere Outdoor Centre, grab a local lunch, and then head down to Scotts Head—the southernmost point of the island where you can actually see the Atlantic Ocean and Caribbean Sea meet." },
+      { type: "Day Trip", title: "Calibishie Day (Red Rocks)", desc: "Red Rock itself isn't a beach, but you definitely have to go. Make a full Calibishie day out of it: visit the Pointe Baptiste chocolate factory first, head out to explore the red rocks, and finish up with dinner and drinks nearby at Nets Of Reef Restaurant and Bar." },
+      { type: "Marine", title: "Champagne Reef", desc: "You swim through warm bubbles coming from underwater vents. Go early or late afternoon to avoid the main crowds." }
+    ]
+  },
+  {
+    label: "Inland Exploring", shortLabel: "Inland", icon: "🌿", title: "Forests & Falls", theme: "Terrain & Trails",
+    activities: [
+      { type: "Hike", title: "Boeri Lake", desc: "A bit of a climb to an elevated crater lake, but it's a great hike to do right before heading to the hot springs." },
+      { type: "Hike", title: "Syndicate Falls", desc: "Only 30 minutes from Portsmouth, followed by an easy 20-minute walk through the forest to the falls." },
+      { type: "Swim", title: "Emerald Pool", desc: "An easy walk through the rainforest to a green, waterfall-fed pool. You can jump in for a swim here." },
+      { type: "Swim", title: "Titou Gorge", desc: "You can swim through a narrow volcanic gorge to find a hidden waterfall inside. Definitely bring water shoes for this one." },
+      { type: "Nature", title: "Trafalgar Falls", desc: "A straightforward path to see the twin waterfalls. You can take a dip in the pool at the bottom." },
+      { type: "Wellness", title: "Wotten Waven Hot Springs", desc: "A little village where local families run hot sulphur spring pools. It's the perfect way to relax in the evening." },
+      { type: "Trek", title: "Boiling Lake", desc: "A challenging 6-7 hour hike through the Valley of Desolation. You'll definitely want to hire a local guide for this trail." }
+    ]
+  },
+  {
+    label: "Food & Nightlife", shortLabel: "Food", icon: "🍽", title: "Dining & Evening Spots", theme: "Food & Drink",
+    activities: [
+      { type: "Note", title: "The Nightlife Scene", desc: "Just a heads up: Dominica isn’t a huge nightlife destination yet. It's definitely starting to grow, but things are still pretty quiet overall. That said, you can find a really good social vibe most nights if you head to the right spots.", isTip: true },
+      { type: "Nightlife", title: "Roseau Bayfront", desc: "Roseau has gotten a lot more lively recently. You'll find lots of busy bars right on the bayfront—it caters a bit more to tourists, but it's definitely a fun, energetic spot for a night out." },
+      { type: "Culture", title: "Local Rum Shacks", desc: "You'll also find lively energy at the local rum shacks dotted everywhere across the island, much like you'd see in Jamaica. It's the best place to find real locals playing dominoes, and where you'll inevitably be introduced to Dominican bush rum 😂" },
+      { type: "Local", title: "Goodvibes Only House", desc: "Great home-cooked food and a perfect lunch stop near the Roseau hot springs. The owner, Froggy, is a legend. <a href='https://www.instagram.com/goodv_ibesonlyhouse/' target='_blank' rel='noopener noreferrer'>View details</a>." },
+      { type: "Dining", title: "Lacou", desc: "A farm-to-table spot down in Roseau with a rotating menu. Definitely one of the best places to eat on the island." },
+      { type: "Seafood", title: "Keepin' It Real", desc: "Right on the beach at Toucari Bay. Grab some freshly grilled lobster and a local beer—it actually has a great local vibe most nights of the week." },
+      { type: "Evening", title: "Bell Hall Beach Spot", desc: "A great option for evening drinks and food right by the water. It stays lively and has a really relaxed atmosphere most nights." },
+      { type: "Bar", title: "Soursop Bar", desc: "My go-to local spot in Portsmouth. It's super laid-back in the evenings and always brings a good local crowd. The owner, Austin, is great." },
+      { type: "Event", title: "Roots Rock | Bar & Restaurant", desc: "Head here on Wednesday nights for Reggae Reggae night, run by Mali. It's a great local event and usually turns into a real late one." },
+      { type: "Social", title: "Manoes Cornerstone", desc: "Over in Savvane Paille, just 10 minutes from Portsmouth. Both Friday and Saturday evenings are the best times to go for good vibes and music." },
+      { type: "Bistro", title: "Zeb Zepis Bistro", desc: "A solid place to stop for lunch when you're driving across the island through Pont Cassé." },
+      { type: "Seafood", title: "Monty's Fish Grill & Bar", desc: "Right in Portsmouth. They do really good, fresh tuna steaks." }
+    ]
+  },
+  {
+    label: "Upscale", shortLabel: "Upscale", icon: "✨", title: "Premium Dining", theme: "Reservations Required",
+    activities: [
+      { type: "Fine Dining", title: "Secret Bay | Bwa Denn", desc: "A bit of a splurge, but the ocean views and food are excellent. You'll need to book this one in advance." },
+      { type: "Dining", title: "Intercontinental", desc: "Great for a nicer night out. You can grab drinks at the Rumfire Bar and then head to the Kwéyòl Restaurant for dinner." }
+    ]
+  },
+  {
+    label: "Culture", shortLabel: "Culture", icon: "🎨", title: "Heritage & Arts", theme: "Local History",
+    activities: [
+      { type: "Heritage", title: "Kalinago Territory", desc: "Take a scenic drive to the east coast to learn about the island's indigenous history." },
+      { type: "Art", title: "Secret Bay Gallery", desc: "A nice curated space featuring a rotating selection of local artists' work." },
+      { type: "Art", title: "The Old Oven Art Gallery", desc: "Tucked inside the Fort Young Hotel in Roseau with some good regular exhibitions." }
+    ]
+  },
+  {
+    label: "Logistics", shortLabel: "Transport", icon: "🚗", title: "Getting Around", theme: "Transport",
+    activities: [
+      { type: "Vehicle", title: "4WD Rental", desc: "I'd recommend hiring a 4WD, like a Suzuki Jimny, to handle the roads. You can pick one up right at the airport." },
+      { type: "Transit", title: "Buses & Taxis", desc: "Taxis and buses are options, but the buses can be unpredictable, and taxi fares add up quickly." }
+    ]
+  },
+  {
+    label: "Directory", shortLabel: "Contacts", icon: "📞", title: "Key Contacts", theme: "Reference",
+    activities: [
+      { type: "Dining", title: "Botanical Garden Dinner", desc: "Give Caren (Paradise Valley) a call at +1-767-225-9199 to book. Mention I sent you!" },
+      { type: "Marine", title: "Catamaran Charter", desc: "Reach out to Andrew Armour at +1-767-315-0980 to book a boat trip out on the water." },
+      { type: "Dining", title: "Batibou Beach Food", desc: "Call Irma at +1-767-225-9696 to check if she's cooking on the beach before you head over." }
+    ]
+  }
+];
+
+let activeIndex = 0;
+let mapInstance = null;
+const navContainer = document.getElementById('navContainer');
+const contentContainer = document.getElementById('contentContainer');
+const sectionSheet = document.getElementById('sectionSheet');
+const sectionSheetList = document.getElementById('sectionSheetList');
+const sheetBackdrop = document.getElementById('sheetBackdrop');
+const openSectionsBtn = document.getElementById('openSectionsBtn');
+const openSectionsBtnBottom = document.getElementById('openSectionsBtnBottom');
+const mobileCurrentSection = document.getElementById('mobileCurrentSection');
+const mobileCurrentTheme = document.getElementById('mobileCurrentTheme');
+const sectionCounter = document.getElementById('sectionCounter');
+const prevSectionBtn = document.getElementById('prevSection');
+const nextSectionBtn = document.getElementById('nextSection');
+
+function isMobileView() {
+  return window.matchMedia('(max-width: 899px)').matches;
+}
+
+function formatDesc(desc) {
+  return desc.replace(
+    /(\+1-767-\d{3}-\d{4})/g,
+    '<a class="act-phone" href="tel:$1">📞 $1</a>'
+  );
+}
+
+function init() {
+  renderNav();
+  renderSectionSheet();
+  renderContent();
+  updateMobileChrome();
+  setupMobileListeners();
+}
+
+function renderSectionSheet() {
+  sectionSheetList.innerHTML = data.map((item, index) => {
+    const count = item.activities ? item.activities.length : (item.isMap ? 'Map' : '');
+    const countLabel = typeof count === 'number' ? `${count} spots` : count;
+    return `
+      <button type="button" class="sheet-section-btn ${index === activeIndex ? 'active' : ''}" data-index="${index}">
+        <span class="sheet-icon" aria-hidden="true">${item.icon || '📍'}</span>
+        <span class="sheet-label-wrap">
+          <span class="sheet-label">${item.label}</span>
+          <span class="sheet-sublabel">${item.theme}</span>
+        </span>
+        ${countLabel ? `<span class="sheet-count">${countLabel}</span>` : ''}
+      </button>
+    `;
+  }).join('');
+
+  sectionSheetList.querySelectorAll('.sheet-section-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTab(Number(btn.dataset.index));
+      closeSectionSheet();
+    });
+  });
+}
+
+function updateMobileChrome() {
+  const section = data[activeIndex];
+  mobileCurrentSection.textContent = section.title;
+  const spots = section.activities?.length;
+  mobileCurrentTheme.textContent = spots
+    ? `${section.theme} · ${spots} spots — tap to change`
+    : `${section.theme} — tap to change`;
+  sectionCounter.textContent = `${activeIndex + 1} of ${data.length}`;
+  prevSectionBtn.disabled = activeIndex === 0;
+  nextSectionBtn.disabled = activeIndex === data.length - 1;
+  renderSectionSheet();
+}
+
+function openSectionSheet() {
+  sectionSheet.classList.add('open');
+  sectionSheet.setAttribute('aria-hidden', 'false');
+  openSectionsBtn.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('sheet-open');
+}
+
+function closeSectionSheet() {
+  sectionSheet.classList.remove('open');
+  sectionSheet.setAttribute('aria-hidden', 'true');
+  openSectionsBtn.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('sheet-open');
+}
+
+function setupMobileListeners() {
+  [openSectionsBtn, openSectionsBtnBottom].forEach(btn => {
+    btn.addEventListener('click', openSectionSheet);
+  });
+  sheetBackdrop.addEventListener('click', closeSectionSheet);
+  prevSectionBtn.addEventListener('click', () => switchTab(activeIndex - 1));
+  nextSectionBtn.addEventListener('click', () => switchTab(activeIndex + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSectionSheet();
+  });
+}
+
+function renderNav() {
+  navContainer.innerHTML = data.map((item, index) => `
+    <div class="nav-item" role="presentation">
+      <button 
+        type="button"
+        role="tab"
+        class="nav-btn ${index === activeIndex ? 'active' : ''}" 
+        onclick="switchTab(${index})"
+        aria-selected="${index === activeIndex}"
+        aria-controls="contentContainer"
+        id="nav-tab-${index}"
+      >
+        ${item.label}
+      </button>
+    </div>
+  `).join('');
+}
+
+function initMap() {
+  if (mapInstance) {
+    mapInstance.remove();
+  }
+  
+  // Center map on Dominica
+  mapInstance = L.map('map-container').setView([15.45, -61.3705], 11);
+  
+  // Minimalist, slightly warm base map layer
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(mapInstance);
+
+  const customIcon = L.divIcon({
+    className: 'custom-map-marker',
+    html: `<div style="background-color: var(--marker-color); width: 16px; height: 16px; border-radius: 50%; border: 3px solid #FFF; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11]
+  });
+
+  // Exhaustive list of all itinerary coordinates
+  const locations = [
+    // Portsmouth & North West
+    { name: "Portsmouth / Saturday Market", type: "Hub", coords: [15.5786, -61.4552] },
+    { name: "Indian River", type: "Nature", coords: [15.5683, -61.4552] },
+    { name: "Cabrits Nat. Park / Intercontinental", type: "Heritage", coords: [15.5861, -61.4725] },
+    { name: "Purple Turtle Beach", type: "Beach", coords: [15.5843, -61.4619] },
+    { name: "Bell Hall Beach", type: "Beach / Evening", coords: [15.5975, -61.4646] },
+    { name: "Coconut Beach & Whale Watching Base", type: "Beach / Marine", coords: [15.5627, -61.4654] },
+    { name: "Secret Bay & Bwa Denn", type: "Upscale Dining", coords: [15.5606, -61.4667] },
+    { name: "Toucari Bay & Keepin' It Real", type: "Snorkel & Food", coords: [15.6105, -61.4651] },
+    { name: "Manoes Cornerstone", type: "Nightlife", coords: [15.6033, -61.4489] },
+    { name: "Syndicate Falls", type: "Hike", coords: [15.5186, -61.4172] },
+    
+    // North / North East (Calibishie area)
+    { name: "Red Rocks (Calibishie Day)", type: "Day Trip", coords: [15.5925, -61.3503] },
+    { name: "Pointe Baptiste Chocolate Factory", type: "Food", coords: [15.5922, -61.3411] },
+    { name: "Batibou Beach", type: "Beach", coords: [15.5919, -61.3789] },
+    { name: "Douglas-Charles Airport", type: "Logistics", coords: [15.5461, -61.3006] },
+
+    // Central & East Coast
+    { name: "Kalinago Territory", type: "Heritage", coords: [15.4795, -61.2647] },
+    { name: "Emerald Pool", type: "Swim", coords: [15.3970, -61.3125] },
+    { name: "Zeb Zepis Bistro (Pont Cassé)", type: "Dining", coords: [15.3781, -61.3512] },
+    
+    // West Coast
+    { name: "Mero Beach", type: "Beach", coords: [15.4334, -61.4287] },
+    
+    // Roseau & Surrounding South
+    { name: "Roseau / Lacou / Roots Rock", type: "Dining & Nightlife", coords: [15.3017, -61.3880] },
+    { name: "Roseau Bayfront", type: "Nightlife", coords: [15.2970, -61.3890] },
+    { name: "Botanical Gardens", type: "Nature & Food", coords: [15.2995, -61.3820] },
+    { name: "The Old Oven Art Gallery", type: "Art", coords: [15.2975, -61.3886] },
+    { name: "Champagne Reef", type: "Marine", coords: [15.2444, -61.3731] },
+    { name: "Soufriere & Scotts Head", type: "Day Trip", coords: [15.2136, -61.3686] },
+
+    // Roseau Valley (Hot Springs & Hikes)
+    { name: "Wotten Waven & Goodvibes Only", type: "Wellness / Food", coords: [15.3333, -61.3500] },
+    { name: "Trafalgar Falls", type: "Nature", coords: [15.3267, -61.3350] },
+    { name: "Titou Gorge", type: "Swim", coords: [15.3300, -61.3253] },
+    { name: "Boeri Lake", type: "Hike", coords: [15.3489, -61.3147] },
+    { name: "Boiling Lake", type: "Trek", coords: [15.3160, -61.2945] }
+  ];
+
+  locations.forEach(loc => {
+    L.marker(loc.coords, { icon: customIcon })
+      .bindPopup(`
+        <div style="font-family: var(--font-sans); max-width: 220px;">
+          <strong style="font-size: 1rem; color: var(--accent); font-weight: 600; line-height: 1.3; display:block;">${loc.name}</strong>
+          <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-top:6px; display:inline-block;">${loc.type}</span>
+        </div>
+      `, { maxWidth: 260, autoPanPadding: [24, 24] })
+      .addTo(mapInstance);
+  });
+
+  requestAnimationFrame(() => {
+    mapInstance.invalidateSize();
+  });
+}
+
+let mapResizeTimer;
+function handleMapResize() {
+  if (!mapInstance) return;
+  clearTimeout(mapResizeTimer);
+  mapResizeTimer = setTimeout(() => mapInstance.invalidateSize(), 150);
+}
+
+window.addEventListener('resize', () => {
+  handleMapResize();
+  if (!isMobileView()) closeSectionSheet();
+});
+window.addEventListener('orientationchange', handleMapResize);
+
+function renderContent() {
+  const section = data[activeIndex];
+  contentContainer.setAttribute('aria-labelledby', `nav-tab-${activeIndex}`);
+  
+  // Reset content to trigger reflows for animation
+  contentContainer.innerHTML = '';
+  
+  if (section.isMap) {
+    contentContainer.innerHTML = `
+      <div class="section-header">
+        <div class="section-theme">${section.theme}</div>
+        <h2 class="section-title">${section.title}</h2>
+        <p class="section-count">Tap markers for details</p>
+      </div>
+      <div id="map-container"></div>
+      <p class="map-hint">Pinch to zoom · Tap a marker for the spot name</p>
+    `;
+    
+    // Timeout to ensure the DOM has painted the map container before initializing Leaflet
+    setTimeout(() => {
+      initMap();
+      setTimeout(handleMapResize, 200);
+    }, 50);
+    
+    return;
+  }
+
+  const count = section.activities.length;
+  const cardsHtml = section.activities.map((act, idx) => `
+    <div class="activity-card stagger-item ${act.isTip ? 'card-tip' : ''}" data-type="${act.type}" style="animation-delay: ${isMobileView() ? 0 : idx * 0.08}s">
+      <div class="card-header">
+        <h3 class="act-title">${act.title}</h3>
+        <span class="act-tag">${act.type}</span>
+      </div>
+      <p class="act-desc">${formatDesc(act.desc)}</p>
+    </div>
+  `).join('');
+
+  contentContainer.innerHTML = `
+    <div class="section-header">
+      <div class="section-theme">${section.theme}</div>
+      <h2 class="section-title">${section.title}</h2>
+      <p class="section-count">${count} ${count === 1 ? 'spot' : 'spots'}</p>
+    </div>
+    <div class="activity-list">
+      ${cardsHtml}
+    </div>
+  `;
+}
+
+function switchTab(index) {
+  if (index < 0 || index >= data.length) return;
+  if (index === activeIndex) {
+    closeSectionSheet();
+    return;
+  }
+  activeIndex = index;
+  renderNav();
+  renderContent();
+  updateMobileChrome();
+  closeSectionSheet();
+
+  if (isMobileView()) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    const activeBtn = document.querySelector('.nav-btn.active');
+    if (activeBtn) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
