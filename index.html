@@ -556,6 +556,16 @@
     scroll-margin-top: calc(var(--nav-mobile-height) + var(--safe-top) + 0.5rem);
   }
 
+  #contentContainer:focus {
+    outline: none;
+  }
+
+  #contentContainer:focus-visible {
+    outline: 2px solid var(--accent-light);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+
   .section-header {
     margin-bottom: var(--space-lg);
     animation: slideDownFade 0.6s var(--ease-out-expo) forwards;
@@ -1709,9 +1719,6 @@ function switchTab(index) {
   const scrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
   window.scrollTo({ top: 0, behavior: scrollBehavior });
 
-  if (isMobileView()) {
-    contentContainer.focus({ preventScroll: true });
-  }
 }
 
 init();
