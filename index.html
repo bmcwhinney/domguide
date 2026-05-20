@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#F7F6F2">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="Bmac's curated shortguide to Dominica — beaches, hikes, food, nightlife, map, and local contacts.">
@@ -165,6 +166,7 @@
     font-weight: 600;
     color: var(--accent);
     letter-spacing: -0.01em;
+    line-height: 1.2;
   }
 
   .mobile-section-trigger {
@@ -381,6 +383,8 @@
   }
 
   .section-sheet-list {
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -695,8 +699,7 @@
     line-height: 1.65;
     flex-grow: 1;
     font-weight: 400;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .act-desc a {
@@ -800,15 +803,25 @@
     html { scroll-behavior: auto; }
     .stagger-item,
     .section-header,
-    #map-container {
+    #map-container,
+    .section-sheet-panel,
+    .section-sheet-backdrop {
       animation: none;
+      transition: none;
       opacity: 1;
       transform: none;
     }
+    .section-sheet.open .section-sheet-panel {
+      transform: translateY(0);
+    }
     .activity-card,
     .nav-btn,
-    .nav-btn.active {
+    .nav-btn.active,
+    .mobile-section-trigger {
       transition: none;
+    }
+    .mobile-section-trigger:active {
+      transform: none;
     }
   }
 
@@ -865,6 +878,9 @@
     .section-header {
       margin-bottom: 1rem;
       padding-top: 0.25rem;
+      animation: none;
+      opacity: 1;
+      transform: none;
     }
 
     .section-theme {
@@ -953,9 +969,24 @@
       border-left-color: #C45C2E;
     }
 
-    .activity-card[data-type="Fine Dining"],
-    .activity-card[data-type="Upscale"] {
+    .activity-card[data-type="Fine Dining"] {
       border-left-color: #7B5EA7;
+    }
+
+    .activity-card[data-type="Heritage"],
+    .activity-card[data-type="Art"],
+    .activity-card[data-type="Market"] {
+      border-left-color: #8B6B4A;
+    }
+
+    .activity-card[data-type="Day Trip"],
+    .activity-card[data-type="Vehicle"],
+    .activity-card[data-type="Transit"] {
+      border-left-color: #5A6B7A;
+    }
+
+    .activity-card[data-type="Wellness"] {
+      border-left-color: #6B8F71;
     }
 
     .card-header {
@@ -1136,7 +1167,12 @@
 
     .content-area {
       padding: 0 var(--space-lg) var(--space-lg) 0;
-      padding-bottom: var(--space-lg);
+      padding-bottom: calc(var(--space-lg) + var(--safe-bottom));
+    }
+
+    .brand-header {
+      padding-left: calc(var(--space-lg) + var(--safe-left));
+      padding-right: calc(var(--space-lg) + var(--safe-right));
     }
     
     .activity-list {
@@ -1193,6 +1229,7 @@
 </style>
 </head>
 <body>
+<noscript><p style="padding:1rem;text-align:center;font-family:sans-serif;">This guide needs JavaScript enabled to browse sections and the map.</p></noscript>
 
 <header class="brand-header">
   <h1 class="brand-title">Bmac's shortguide to Dominica 🇩🇲</h1>
@@ -1203,7 +1240,7 @@
 <header class="mobile-header" id="mobileHeader">
   <div class="mobile-header-top">
     <span aria-hidden="true">🇩🇲</span>
-    <span class="mobile-brand-text">Bmac's Guide to Dominica</span>
+    <h1 class="mobile-brand-text">Bmac's Guide to Dominica</h1>
   </div>
   <button type="button" class="mobile-section-trigger" id="openSectionsBtn" aria-expanded="false" aria-controls="sectionSheetPanel" aria-haspopup="dialog">
     <span class="mobile-section-current" id="mobileCurrentSection">Interactive Island Map</span>
@@ -1379,13 +1416,22 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+function isSafeUrl(url) {
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' || u.protocol === 'http:';
+  } catch {
+    return false;
+  }
+}
+
 function formatDesc(desc, link) {
   let html = escapeHtml(desc);
   html = html.replace(/(\+1-767-\d{3}-\d{4})/g, (phone) => {
     const digits = phone.replace(/\D/g, '');
     return `<a class="act-phone" href="tel:+${digits}">📞 ${escapeHtml(phone)}</a>`;
   });
-  if (link && link.url && link.label) {
+  if (link && link.url && link.label && isSafeUrl(link.url)) {
     html += ` <a class="act-link" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)}</a>`;
   }
   return html;
@@ -1404,7 +1450,10 @@ function init() {
   renderSectionSheet();
   renderContent();
   updateMobileChrome();
-  window.addEventListener('load', updateBottomNavHeight);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(updateMobileChromeHeights);
+  }
+  window.addEventListener('load', updateMobileChromeHeights);
 }
 
 function bindListeners() {
@@ -1414,6 +1463,27 @@ function bindListeners() {
   navContainer.addEventListener('click', (e) => {
     const btn = e.target.closest('.nav-btn');
     if (btn && btn.dataset.index != null) switchTab(Number(btn.dataset.index));
+  });
+
+  navContainer.addEventListener('keydown', (e) => {
+    if (!e.target.closest('.nav-btn')) return;
+    let next = activeIndex;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      next = Math.min(activeIndex + 1, data.length - 1);
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      next = Math.max(activeIndex - 1, 0);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      next = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      next = data.length - 1;
+    } else {
+      return;
+    }
+    if (next !== activeIndex) switchTab(next);
   });
 
   [openSectionsBtn, openSectionsBtnBottom].forEach((btn) => {
@@ -1450,18 +1520,21 @@ function renderSectionSheet() {
   }).join('');
 
   sectionSheetList.querySelectorAll('.sheet-section-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      switchTab(Number(btn.dataset.index));
-      closeSectionSheet();
-    });
+    btn.addEventListener('click', () => switchTab(Number(btn.dataset.index)));
   });
 }
 
-function updateBottomNavHeight() {
-  const nav = document.getElementById('mobileBottomNav');
-  if (nav && isMobileView()) {
-    document.documentElement.style.setProperty('--mobile-bottom-h', `${nav.offsetHeight}px`);
+function updateMobileChromeHeights() {
+  const root = document.documentElement;
+  if (!isMobileView()) {
+    root.style.removeProperty('--mobile-bottom-h');
+    root.style.removeProperty('--mobile-header-h');
+    return;
   }
+  const nav = document.getElementById('mobileBottomNav');
+  const header = document.getElementById('mobileHeader');
+  if (nav) root.style.setProperty('--mobile-bottom-h', `${nav.offsetHeight}px`);
+  if (header) root.style.setProperty('--mobile-header-h', `${header.offsetHeight}px`);
 }
 
 function updateMobileChrome() {
@@ -1475,7 +1548,7 @@ function updateMobileChrome() {
   prevSectionBtn.disabled = activeIndex === 0;
   nextSectionBtn.disabled = activeIndex === data.length - 1;
   renderSectionSheet();
-  requestAnimationFrame(updateBottomNavHeight);
+  requestAnimationFrame(updateMobileChromeHeights);
 }
 
 function openSectionSheet() {
@@ -1505,7 +1578,7 @@ function renderNav() {
         role="tab"
         class="nav-btn ${index === activeIndex ? 'active' : ''}" 
         data-index="${index}"
-        aria-selected="${index === activeIndex}"
+        aria-selected="${index === activeIndex ? 'true' : 'false'}"
         aria-controls="contentContainer"
         id="nav-tab-${index}"
         tabindex="${index === activeIndex ? '0' : '-1'}"
@@ -1531,7 +1604,7 @@ function initMap() {
   
   // Minimalist, slightly warm base map layer
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd',
     maxZoom: 19
   }).addTo(mapInstance);
@@ -1613,7 +1686,7 @@ function handleMapResize() {
 
 window.addEventListener('resize', () => {
   handleMapResize();
-  updateBottomNavHeight();
+  updateMobileChromeHeights();
   if (!isMobileView()) closeSectionSheet();
 });
 window.addEventListener('orientationchange', handleMapResize);
@@ -1621,6 +1694,7 @@ window.addEventListener('orientationchange', handleMapResize);
 function renderContent() {
   const section = data[activeIndex];
   contentContainer.setAttribute('aria-labelledby', `nav-tab-${activeIndex}`);
+  contentContainer.setAttribute('aria-label', section.title);
 
   destroyMap();
   contentContainer.innerHTML = '';
@@ -1640,7 +1714,10 @@ function renderContent() {
     requestAnimationFrame(() => {
       setTimeout(() => {
         initMap();
-        setTimeout(handleMapResize, 200);
+        setTimeout(() => {
+          handleMapResize();
+          updateMobileChromeHeights();
+        }, 200);
       }, 50);
     });
     return;
@@ -1675,6 +1752,8 @@ function renderContent() {
       el.style.animationDelay = `${idx * 0.08}s`;
     });
   }
+
+  requestAnimationFrame(updateMobileChromeHeights);
 }
 
 function switchTab(index) {
